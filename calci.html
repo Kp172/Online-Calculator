@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Calculator</title>
+	<meta charset="utf-8"> 
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+	<div class="container">
+	<div class="calculator">
+		<div class="screen">0</div>
+		<div class="keys">
+			<button class="key--operator" data-action="add">+</button>
+			<button class="key--operator" data-action="sub">-</button>
+			<button class="key--operator" data-action="multi">*</button>
+			<button class="key--operator" data-action="divide">/</button>
+			<button>7</button>
+			<button>8</button>
+			<button>9</button>
+			<button>4</button>
+			<button>5</button>
+			<button>6</button>
+			<button>1</button>
+			<button>2</button>
+			<button>3</button>
+			<button data-action="decimal">.</button>
+			<button>0</button>
+			<button data-action="clear">AC</button>
+			<button class="key--equal" data-action="equal">=</button>
+		</div>
+	</div>
+	</div>
+
+	<script>
+		var calci=document.querySelector(".calculator");
+		var keys=document.querySelector(".keys");
+		var buttons=document.querySelectorAll('button');
+		keys.addEventListener('click', fun1);
+
+		var display=document.querySelector('.screen');
+		var firstnum;
+		var secondnum;
+		var oper;
+		var ans;
+
+		function calculate(n1, oper, n2){
+			if(oper=="add")
+				ans=parseFloat(n1)+parseFloat(n2);
+			else if(oper=="sub")
+				ans=parseFloat(n1)-parseFloat(n2)
+			else if(oper=="multi")
+				ans=parseFloat(n1)*parseFloat(n2);
+			else if(oper=="divide")
+				ans=parseFloat(n1)/parseFloat(n2)	
+			console.log(ans)
+			return ans.toFixed(12)	
+		}
+
+		function fun1(e){
+			if(e.target.matches('button')){
+				var x = e.target.dataset.action;
+				var y = e.target.textContent;
+				var screen = display.textContent;
+				var op = calci.dataset.prevkey;
+
+				for(var i=0; i<buttons.length; i++){
+					buttons[i].classList.remove("is-depressed");
+				}
+				
+				if(x!="clear"){
+					var ac = document.querySelector("[data-action='clear']")
+					ac.textContent="CE"
+				}
+
+				if(!x){
+					console.log("number-key");
+					if(screen=="0" || op=="operator"|| op=="equal"){
+						display.textContent=y;
+					}
+					else if(screen!="0"){
+						display.textContent += y;
+					}
+					calci.dataset.prevkey="num";
+					if(op=="equal"){
+						firstnum=""
+						secodnum=""
+						oper=""
+					}
+				}
+
+				if(x == "decimal"){
+					console.log("decimal-key");
+					if(op=="operator"){
+						display.textContent="0."
+					}
+					else if(!screen.includes('.')){
+						display.textContent+='.';
+					}
+					calci.dataset.prevkey="decimal"
+				}
+				if( x=="clear"){
+					console.log("Ac key");
+					display.textContent="0";
+					var ac = document.querySelector("[data-action='clear']")
+					if(ac.textContent=="CE"){
+						ac.textContent="AC"
+					}
+					else if(ac.textContent=="AC"){
+						firstnum=""
+					secondnum=""
+					oper=""
+					} 
+					calci.dataset.prevkey="clear"
+						
+				}
+					
+				if(x=="equal"){
+					console.log("equal-key");
+					if(op=="operator"){
+						display.textContent=firstnum
+						secondnum=""
+						calci.dataset.prevkey="equal"
+					}
+					else if(op!="operator"){
+					secondnum=screen
+					if(op == "equal"){
+						firstnum=screen;
+						secondnum=calci.dataset.modsec;
+					}
+					display.textContent=calculate(firstnum,oper,secondnum)
+					calci.dataset.modsec=secondnum
+					calci.dataset.prevkey="equal"
+					}
+				}
+					
+				if(x=="add"||x=="sub"||x=="multi"||x=="divide"){
+					if(op=="equal"){
+						firstnum=display.textContent
+						secondnum=""
+					}
+					else if(op!='operator'){
+						if(firstnum && oper){
+							display.textContent = calculate(firstnum,oper,screen)
+						}	
+						console.log("operator-key");
+						firstnum=display.textContent
+					}
+					oper=x
+					e.target.classList.add("is-depressed")	
+					calci.dataset.prevkey="operator"		
+				}
+
+
+			}
+		}
+
+	</script>
+
+</body>
+</html>
